@@ -1,10 +1,17 @@
 pub mod capture;
+use tauri::Manager;
+
 use crate::capture::{get_image_inner, CaptureError, GlobalState};
+
+use std::sync::Mutex;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    tauri::Builder::default()
-        .manage(GlobalState::default())
+    tauri::Builder::default().setup(|app| {
+        app.manage(Mutex::new(GlobalState::default()));
+        Ok(())
+
+    })
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![greet, get_image])
         .run(tauri::generate_context!())
