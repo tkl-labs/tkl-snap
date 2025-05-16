@@ -4,9 +4,9 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "dev": "next dev --turbopack",
+    "build": "next build --turbopack",
+    "start": "npx serve@latest out",
     "lint": "next lint",
     "tauri": "tauri"
   },

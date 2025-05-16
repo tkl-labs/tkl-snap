@@ -7,18 +7,16 @@
     "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:3000",
     "beforeBuildCommand": "npm run build",
-    "frontendDist": "../dist"
+    "frontendDist": "../out"
   },
   "app": {
     "windows": [
       {
-        "title": "tkl-snap",
-        "width": 800,
-        "height": 600
+        "title": "TKL Snap"
       }
     ],
     "security": {
-      "csp": null
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'"
     }
   },
   "bundle": {
