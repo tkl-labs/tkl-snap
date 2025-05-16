@@ -1,19 +1,21 @@
 use std::time::Instant;
 
-use base64::engine::Engine as _;
 use base64::engine::general_purpose::STANDARD as BASE64;
-use std::io::Cursor;
+use base64::engine::Engine as _;
 use image::ImageEncoder;
-use scap::{capturer::{Area, Point, Size, Capturer, Options}, frame::Frame};
 use scap::frame::convert_bgra_to_rgb;
+use scap::{
+    capturer::{Area, Capturer, Options, Point, Size},
+    frame::Frame,
+};
 use serde::Serialize;
+use std::io::Cursor;
 use std::sync::Mutex;
 
 #[derive(Default)]
 pub struct GlobalState {
-   captures: Mutex<Vec<Capturer>>,
+    captures: Mutex<Vec<Capturer>>,
 }
-
 
 #[derive(Serialize)]
 #[serde(tag = "type", content = "message")]
@@ -25,10 +27,7 @@ pub enum CaptureError {
     FrameTypeMismatch,
 }
 
-
-
 pub fn get_image_inner() -> Result<String, CaptureError> {
-
     if !scap::is_supported() {
         return Err(CaptureError::UnsupportedPlatform);
     }
@@ -56,25 +55,25 @@ pub fn get_image_inner() -> Result<String, CaptureError> {
         target: None, // None captures the primary display
         crop_area: Option::from(Area {
             origin: Point { x: 0.0, y: 0.0 }, // top left
-            size: Size { width: capture_width as f64, height: capture_height as f64 }, // change to actual resolution
+            size: Size {
+                width: capture_width as f64,
+                height: capture_height as f64,
+            }, // change to actual resolution
         }),
         show_cursor: false,
         show_highlight: false,
         excluded_targets: None,
         output_type: scap::frame::FrameType::BGRAFrame,
-        output_resolution: scap::capturer::Resolution::_1440p
+        output_resolution: scap::capturer::Resolution::_1440p,
     };
 
     // Create Capturer
 
-    
     let start = Instant::now();
     let mut capturer = Capturer::build(options).unwrap();
     let duration = start.elapsed();
 
     eprintln!("\n\nTime Taken to build capturer: {:?}\n\n", duration);
-
-
 
     let start = Instant::now();
     // Start Capture
@@ -82,8 +81,6 @@ pub fn get_image_inner() -> Result<String, CaptureError> {
 
     // Get frame from capturer
     let frame_data = capturer.get_next_frame().unwrap();
-
-
 
     // Stop Capture
     capturer.stop_capture();
@@ -103,7 +100,14 @@ pub fn get_image_inner() -> Result<String, CaptureError> {
             // create a PNG encoder to write to buffer
             let encoder = image::codecs::png::PngEncoder::new(&mut buffer);
 
-            encoder.write_image(&rgb_data, capture_width, capture_height, image::ExtendedColorType::Rgb8).expect("Failed");
+            encoder
+                .write_image(
+                    &rgb_data,
+                    capture_width,
+                    capture_height,
+                    image::ExtendedColorType::Rgb8,
+                )
+                .expect("Failed");
 
             let png_bytes = buffer.into_inner();
             Ok(BASE64.encode(png_bytes))
@@ -116,6 +120,3 @@ pub fn get_image_inner() -> Result<String, CaptureError> {
 
     return output;
 }
-
-
-

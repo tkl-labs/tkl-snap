@@ -1,7 +1,6 @@
 pub mod capture;
 use crate::capture::{get_image_inner, CaptureError, GlobalState};
 
-
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -11,8 +10,6 @@ pub fn run() {
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
-
-
 
 #[tauri::command]
 fn get_image() -> Result<String, CaptureError> {
